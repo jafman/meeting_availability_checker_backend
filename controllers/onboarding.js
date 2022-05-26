@@ -1,5 +1,5 @@
 const { getAccessToken, getUserDetails } = require('../modules/auth');
-const { insert } = require('../utils/db');
+const { insert, getOne, updateOne } = require('../utils/db');
 
 const onboarding = async (req, res) => {
   const { body: { code }, db } = req;
@@ -45,11 +45,21 @@ const onboarding = async (req, res) => {
 
 
 const saveTokens = async (accessToken, db) => {
+
   const userDetails = await getUserDetails(accessToken.access_token);
   const { email, name } = userDetails;
   const user = { email, name, ...accessToken };
-  const saved = await insert(db, 'users', user);
-  return saved;
+  const userOnboarded = await getOne(db, 'users', { email });
+  if(userOnboarded){
+    const updated = await updateOne(db, 'users', { email }, { ...accessToken });
+    console.log('updated token');
+    return true;
+  } else {
+    const saved = await insert(db, 'users', user);
+    console.log('saved token');
+    return saved;
+  }
+  
 }
 
 module.exports = { onboarding };

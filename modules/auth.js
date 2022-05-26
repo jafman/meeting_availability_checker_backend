@@ -1,7 +1,9 @@
 const {google} = require('googleapis');
 const oauth2V2 = google.oauth2('v2');
+const calendar = google.calendar('v3');
 const { googleCredentials } = require('./config');
 const { getOne } = require('../utils/db');
+const axios = require('axios').default;
 
 const oauth2Client = new google.auth.OAuth2(
   googleCredentials.client_id,
@@ -78,5 +80,25 @@ const getAccessTokenFromDB = async (email, db) => {
   }
 }
 
+const getFreeBusy = async (accessToken, start, end, email) => {
+  const url = 'https://www.googleapis.com/calendar/v3/freeBusy';
+  return new Promise((resolve, reject) => {
+    axios({
+      method: 'post',
+      url,
+      headers: { Authorization: `Bearer ${accessToken}` },
+      data: {
+        timeMin: start,
+        timeMax: end,
+        timeZone: 'UTC',
+        items: [{ id: email }]
+      }
+    }).then(response => {
+      resolve(response.data);
+    }).catch(error => {
+      reject(error);
+    });
+  });
+}
 
-module.exports = { getUrl, getAccessToken, getUserDetails, getAccessTokenFromDB };
+module.exports = { getUrl, getAccessToken, getUserDetails, getAccessTokenFromDB, getFreeBusy };
