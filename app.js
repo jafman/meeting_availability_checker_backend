@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { getAccessToken,  getUrl } = require('./modules/google/auth');
+const { getUrl } = require('./modules/google/auth');
 const onboardingRoute = require('./routers/onboarding');
 const meetingRoute = require('./routers/meeting');
 const { initDBClient } = require('./db');
@@ -22,7 +22,7 @@ const appConfig = (app) => {
       next();
     }, meetingRoute);
 
-  app.get('/', (req,res)=>{
+  app.get('/health', (req,res)=>{
     res.status(200).json({
       status: 'Success',
       message: 'working...'
@@ -34,7 +34,7 @@ const appConfig = (app) => {
       status: 'Success',
       authUrl: getUrl()
     })
-  });       
+  }); 
 
   initDBClient().then( (database) => {
     db = database;

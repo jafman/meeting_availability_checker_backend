@@ -1,26 +1,85 @@
-/*
-const compareShedules = (freeBusy_1, freeBusy_2) => {
-  const freeBusy_1_array = freeBusy_1.calendars[email_1].busy;
-  const freeBusy_2_array = freeBusy_2.calendars[email_2].busy;
-  const freeBusy_1_array_length = freeBusy_1_array.length;
-  const freeBusy_2_array_length = freeBusy_2_array.length;
-  let i = 0;
-  let j = 0;
-  let conflict = false;
-  while (i < freeBusy_1_array_length && j < freeBusy_2_array_length) {
-    const freeBusy_1_start = freeBusy_1_array[i].start;
-    const freeBusy_1_end = freeBusy_1_array[i].end;
-    const freeBusy_2_start = freeBusy_2_array[j].start;
-    const freeBusy_2_end = freeBusy_2_array[j].end;
-    if (freeBusy_1_start < freeBusy_2_start) {
-      i++;
-    } else if (freeBusy_1_start > freeBusy_2_start) {
-      j++;
+const moment = require('moment');
+const MEETING_DURATION = 30; // minutes
+const RESOLUTION = 5; // minutes
+
+/* ALGORITHM:
+  * 1. Create a time line starting from start time and ending at end time
+  * 2. The time line is separated into intervals called ticks of length 5 minutes
+  * 3. Each tick is represented by an array element in the timeline array
+  * 4. A tick can be either busy or free
+  * 5. Add the busy_1 intervals to the timeline and mark them as busy
+  * 6. Add the busy_2 intervals to the timeline and mark them as busy
+  * 7. Look for a free interval in the timeline up to the meeting duration
+  * 8. Return the first free interval found
+  * 9. If no free interval is found, return null
+*/
+const compareShedules = (busy_1, busy_2, start, end) => {
+  const timeline = [];
+  const timeStart = moment(start);
+  const timeEnd = moment(end);
+  let tickCount = Math.abs(timeStart.diff(timeEnd, 'minutes')) / RESOLUTION;
+  tickCount = Math.ceil(tickCount);
+  let currentTimeStart = timeStart;
+  // build the timeline
+  for(let i = 0; i < tickCount; i++){
+    timeline.push({
+      status: 'free',
+      start: currentTimeStart,
+      end: currentTimeStart.add(RESOLUTION, 'minutes')
+    });
+    currentTimeStart = currentTimeStart.add(RESOLUTION, 'minutes');
+  }
+  // mark busy intervals in the timeline
+  busy_1.forEach(interval => {
+    const startTime = moment(interval.start);
+    const endTime = moment(interval.end);
+    let startTick = Maths.abs(startTime.diff(timeStart, 'minutes')) / RESOLUTION;
+    startTick = Math.floor(startTick);
+    let tickCount = Maths.abs(endTime.diff(startTime, 'minutes')) / RESOLUTION;
+    tickCount = Math.ceil(endTick);
+    for(let i = startTick; i < startTick + tickCount; i++){
+      timeline[i].status = 'busy';
+    }
+  });
+
+  busy_2.forEach(interval => {
+    const startTime = moment(interval.start);
+    const endTime = moment(interval.end);
+    let startTick = Maths.abs(startTime.diff(timeStart, 'minutes')) / RESOLUTION;
+    startTick = Math.floor(startTick);
+    let tickCount = Maths.abs(endTime.diff(startTime, 'minutes')) / RESOLUTION;
+    tickCount = Math.ceil(endTick);
+    for(let i = startTick; i < startTick + tickCount; i++){
+      timeline[i].status = 'busy';
+    }
+  });
+
+  // find a free interval in the timeline up to the meeting duration
+  let freeInterval = null;
+  let freeSlotCount = 0;
+  let startIndex = -1;
+  let endIndex = -1;
+  for(let i = 0; i < timeline.length; i++){
+    if(timeline[i].status === 'free'){
+      if(startIndex !== -1){
+        startIndex = i;
+      }
+      freeSlotCount++;
+      if(freeSlorCount * RESOLUTION >= MEETING_DURATION){
+        endIndex = i;
+        freeInterval = {
+          start: timeline[startIndex].start,
+          end: timeline[endIndex].end
+        }
+        break;
+      }
     } else {
-      conflict = true;
-      break;
+      freeSlotCount = 0;
+      startIndex = -1;
     }
   }
-  return conflict;
+  return freeInterval;
+
 }
-*/
+
+module.exports = { compareShedules };
