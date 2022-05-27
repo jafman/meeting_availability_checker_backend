@@ -2,7 +2,7 @@ const {google} = require('googleapis');
 const oauth2V2 = google.oauth2('v2');
 const calendar = google.calendar('v3');
 const { googleCredentials } = require('./config');
-const { getOne } = require('../utils/db');
+const { getOne } = require('../../utils/db');
 const axios = require('axios').default;
 
 const oauth2Client = new google.auth.OAuth2(

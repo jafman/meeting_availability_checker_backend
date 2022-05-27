@@ -1,4 +1,4 @@
-const { getAccessTokenFromDB, getFreeBusy } = require('../modules/auth');
+const { getAccessTokenFromDB, getFreeBusy } = require('../modules/google/auth');
 
 const meeting = async (req, res) => {
   const { body: { email_1, email_2, start, end }, db } = req;

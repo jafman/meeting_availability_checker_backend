@@ -1,4 +1,4 @@
-const { getAccessToken, getUserDetails } = require('../modules/auth');
+const { getAccessToken, getUserDetails } = require('../modules/google/auth');
 const { insert, getOne, updateOne } = require('../utils/db');
 
 const onboarding = async (req, res) => {

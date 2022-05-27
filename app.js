@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { getAccessToken,  getUrl } = require('./modules/auth');
+const { getAccessToken,  getUrl } = require('./modules/google/auth');
 const onboardingRoute = require('./routers/onboarding');
 const meetingRoute = require('./routers/meeting');
 const { initDBClient } = require('./db');
