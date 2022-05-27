@@ -18,13 +18,9 @@ const compareShedules = (busy_1, busy_2, start, end) => {
   const timeline = [];
   const timeStart = moment.utc(start);
   const timeEnd = moment.utc(end);
-  console.log('Time start and time end before conversion:' , start, end);
-  console.log('Time start and time end after conversion:' , timeStart, timeEnd);
   let tickCount = Math.abs(timeStart.diff(timeEnd, 'minutes')) / RESOLUTION;
   tickCount = Math.ceil(tickCount);
-  console.log('Time start Now:' , timeStart);
   let currentTimeStart = timeStart.clone();
-  console.log('Current Time start:' , currentTimeStart);
   // build the timeline
   for(let i = 0; i < tickCount; i++){
     timeline.push({
