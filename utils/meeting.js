@@ -14,41 +14,48 @@ const RESOLUTION = 5; // minutes
   * 9. If no free interval is found, return null
 */
 const compareShedules = (busy_1, busy_2, start, end) => {
+
   const timeline = [];
-  const timeStart = moment(start);
-  const timeEnd = moment(end);
+  const timeStart = moment.utc(start);
+  const timeEnd = moment.utc(end);
+  console.log('Time start and time end before conversion:' , start, end);
+  console.log('Time start and time end after conversion:' , timeStart, timeEnd);
   let tickCount = Math.abs(timeStart.diff(timeEnd, 'minutes')) / RESOLUTION;
   tickCount = Math.ceil(tickCount);
-  let currentTimeStart = timeStart;
+  console.log('Time start Now:' , timeStart);
+  let currentTimeStart = timeStart.clone();
+  console.log('Current Time start:' , currentTimeStart);
   // build the timeline
   for(let i = 0; i < tickCount; i++){
     timeline.push({
       status: 'free',
-      start: currentTimeStart,
-      end: currentTimeStart.add(RESOLUTION, 'minutes')
+      start: currentTimeStart.clone(),
+      end: currentTimeStart.clone().add(RESOLUTION, 'minutes')
     });
-    currentTimeStart = currentTimeStart.add(RESOLUTION, 'minutes');
+    currentTimeStart.add(RESOLUTION, 'minutes');
   }
+  console.log('timeline: ', timeline, timeline.length);
   // mark busy intervals in the timeline
   busy_1.forEach(interval => {
-    const startTime = moment(interval.start);
-    const endTime = moment(interval.end);
-    let startTick = Maths.abs(startTime.diff(timeStart, 'minutes')) / RESOLUTION;
+    const startTime = moment.utc(interval.start);
+    const endTime = moment.utc(interval.end);
+    let startTick = Math.abs(startTime.diff(timeStart, 'minutes')) / RESOLUTION;
     startTick = Math.floor(startTick);
-    let tickCount = Maths.abs(endTime.diff(startTime, 'minutes')) / RESOLUTION;
-    tickCount = Math.ceil(endTick);
+    let tickCount = Math.abs(endTime.diff(startTime, 'minutes')) / RESOLUTION;
+    tickCount = Math.ceil(tickCount);
     for(let i = startTick; i < startTick + tickCount; i++){
       timeline[i].status = 'busy';
+      console.log('Current:', i)
     }
   });
 
   busy_2.forEach(interval => {
-    const startTime = moment(interval.start);
-    const endTime = moment(interval.end);
-    let startTick = Maths.abs(startTime.diff(timeStart, 'minutes')) / RESOLUTION;
+    const startTime = moment.utc(interval.start);
+    const endTime = moment.utc(interval.end);
+    let startTick = Math.abs(startTime.diff(timeStart, 'minutes')) / RESOLUTION;
     startTick = Math.floor(startTick);
-    let tickCount = Maths.abs(endTime.diff(startTime, 'minutes')) / RESOLUTION;
-    tickCount = Math.ceil(endTick);
+    let tickCount = Math.abs(endTime.diff(startTime, 'minutes')) / RESOLUTION;
+    tickCount = Math.ceil(tickCount);
     for(let i = startTick; i < startTick + tickCount; i++){
       timeline[i].status = 'busy';
     }
@@ -61,12 +68,13 @@ const compareShedules = (busy_1, busy_2, start, end) => {
   let endIndex = -1;
   for(let i = 0; i < timeline.length; i++){
     if(timeline[i].status === 'free'){
-      if(startIndex !== -1){
+      if(startIndex === -1){
         startIndex = i;
       }
       freeSlotCount++;
-      if(freeSlorCount * RESOLUTION >= MEETING_DURATION){
+      if(freeSlotCount * RESOLUTION >= MEETING_DURATION){
         endIndex = i;
+        console.log('Start & End Index', startIndex, endIndex);
         freeInterval = {
           start: timeline[startIndex].start,
           end: timeline[endIndex].end
