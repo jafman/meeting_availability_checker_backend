@@ -32,6 +32,7 @@ const updateOne = async (database, collection, query, data) => {
     const options = { upsert: false };
     const currentCollection = database.collection(collection);
     const result = await currentCollection.updateOne(query, updateDoc, options);
+    return true;
   } catch (error) {
     console.log(error);
     return false;

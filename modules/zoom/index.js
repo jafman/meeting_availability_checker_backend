@@ -24,7 +24,7 @@ const createMeeting = async (agenda, duration, startTime) => {
     start_time: startTime,
     duration,
     password: MEETING_PASSWORD,
-    time_zone: 'UTC',
+    timezone: 'UTC',
   };
 
   const options = {

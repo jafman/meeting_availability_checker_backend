@@ -30,7 +30,7 @@ const compareShedules = (busy_1, busy_2, start, end) => {
     });
     currentTimeStart.add(RESOLUTION, 'minutes');
   }
-  console.log('timeline: ', timeline, timeline.length);
+  
   // mark busy intervals in the timeline
   busy_1.forEach(interval => {
     const startTime = moment.utc(interval.start);
@@ -41,7 +41,6 @@ const compareShedules = (busy_1, busy_2, start, end) => {
     tickCount = Math.ceil(tickCount);
     for(let i = startTick; i < startTick + tickCount; i++){
       timeline[i].status = 'busy';
-      console.log('Current:', i)
     }
   });
 
@@ -70,7 +69,6 @@ const compareShedules = (busy_1, busy_2, start, end) => {
       freeSlotCount++;
       if(freeSlotCount * RESOLUTION >= MEETING_DURATION){
         endIndex = i;
-        console.log('Start & End Index', startIndex, endIndex);
         freeInterval = {
           start: timeline[startIndex].start,
           end: timeline[endIndex].end

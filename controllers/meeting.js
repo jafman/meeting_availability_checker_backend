@@ -29,7 +29,7 @@ const meeting = async (req, res) => {
           try{
             const title = `${email_1} and ${email_2} meeting`;
             const meeting = await createMeeting(title, MEETING_DURATION, availableSlot.start);
-            res.status(201).json(meeting);
+            res.status(201).json({availableSlot, meeting});
           } catch(error){
             console.log(error);
           }
