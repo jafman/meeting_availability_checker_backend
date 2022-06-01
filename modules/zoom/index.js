@@ -15,9 +15,17 @@ const token = jwt.sign(payload, config.APISecret);
 const url = 'https://api.zoom.us/v2/users/me/meetings';
 
 // create zoom meeting
-const createMeeting = async (agenda, duration, startTime) => {
+const createMeeting = async (agenda, duration, startTime, invitees) => {
+
+  const settings = {
+    jbh_time: 0,
+    join_before_host: true,
+    meeting_invitees: invitees
+  }
+
   const data = {
     agenda,
+    settings,
     default_password: false,
     topic: agenda,
     type: 2,
@@ -25,6 +33,7 @@ const createMeeting = async (agenda, duration, startTime) => {
     duration,
     password: MEETING_PASSWORD,
     timezone: 'UTC',
+    
   };
 
   const options = {

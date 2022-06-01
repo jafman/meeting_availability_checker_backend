@@ -1,4 +1,4 @@
-const { getAccessTokenFromDB, getFreeBusy } = require('../modules/google/auth');
+const { createEvent, getAccessTokenFromDB, getFreeBusy } = require('../modules/google/auth');
 const { compareShedules } = require('../utils/meeting');
 const { createMeeting } = require('../modules/zoom');
 const MEETING_DURATION = 30; // minutes
@@ -27,9 +27,22 @@ const meeting = async (req, res) => {
         if(availableSlot){
 
           try{
+            const attendees = [
+              {'email': email_1},
+              {'email': email_2}
+            ];
             const title = `${email_1} and ${email_2} meeting`;
-            const meeting = await createMeeting(title, MEETING_DURATION, availableSlot.start);
-            res.status(201).json({availableSlot, meeting});
+            const meeting = await createMeeting(title, MEETING_DURATION, availableSlot.start, attendees);
+            const location = meeting.join_url;
+            const description = `Event Name: ${title} \n You can join this meeting from your computer, tablet, or smartphone. \n ${location}`;
+            const event = await createEvent(accessToken_1, title, availableSlot.start, availableSlot.end, description, attendees, location);
+
+            const response = {
+              'status': 'success',
+              'message': 'meeting created',
+              'data': { availableSlot, attendees}
+            }
+            res.status(201).json(response);
           } catch(error){
             console.log(error);
           }

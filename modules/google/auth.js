@@ -1,5 +1,6 @@
 const {google} = require('googleapis');
 const oauth2V2 = google.oauth2('v2');
+const calendar = google.calendar({version: 'v3'});
 const { googleCredentials } = require('./config');
 const { getOne } = require('../../utils/db');
 const axios = require('axios').default;
@@ -20,7 +21,7 @@ oauth2Client.on('tokens', (tokens) => {
 
 // generate a url that asks permissions for Google Calendar scopes
 const scopes = [
-  'https://www.googleapis.com/auth/calendar.readonly',
+  'https://www.googleapis.com/auth/calendar',
   'https://www.googleapis.com/auth/userinfo.profile',
   'https://www.googleapis.com/auth/userinfo.email'
 ];
@@ -100,4 +101,40 @@ const getFreeBusy = async (accessToken, start, end, email) => {
   });
 }
 
-module.exports = { getUrl, getAccessToken, getUserDetails, getAccessTokenFromDB, getFreeBusy };
+
+// Create Event on Google Calendar
+const createEvent = async (accessToken, summary, startTime, endTime, description, attendees, location) => {
+  oauth2Client.setCredentials({
+    access_token: accessToken,
+  });
+  const event = {
+    summary,
+    description,
+    attendees,
+    location,
+    'start': {
+      'dateTime': startTime,
+      'timeZone': 'UTC'
+    },
+    'end': {
+      'dateTime': endTime,
+      'timeZone': 'UTC'
+    }
+  }
+
+  return new Promise((resolve, reject) => {
+    calendar.events.insert({
+      auth: oauth2Client,
+      calendarId: 'primary',
+      resource: event,
+    }, (err, newEvent) => {
+      if(err) {
+        reject(err);
+      } else {
+        resolve(newEvent);
+      }
+    });
+  });
+}
+
+module.exports = { createEvent, getUrl, getAccessToken, getUserDetails, getAccessTokenFromDB, getFreeBusy };
